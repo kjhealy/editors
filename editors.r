@@ -83,19 +83,39 @@ feature.labels <- gsub("preview export", "preview/export", feature.labels)
 feature.labels <- gsub("Open in ", "Open in…", feature.labels)
 feature.labels <- gsub("Full text", "Full-text", feature.labels)
 feature.labels <- gsub("handlers", "handler(s)", feature.labels)
-orig.labels <- colnames(data)
-
-## Lookup table for labeling later
-lab.lookup <- data.frame(orig.labels,feature.labels)
-
-## Price is not included as a label
-feature.labels <- feature.labels[2:length(feature.labels)]
-lab.lookup <- lab.lookup[-1,]
 
 ## Put in the rownames as a variable
 data.o <- data
 r.names <- factor(rownames(data.o), levels=rev(rownames(data)), ordered=TRUE)
+
+## All column names, ordered as in original data, including price
 c.names <- factor(colnames(data.o), levels=colnames(data), ordered=TRUE)
+
+## Column names ordered from cluster analysis, including Price
+c.names.clus <- out.by.feature$labels[out.by.feature$order]
+c.names.clus.f <- factor(c.names.clus, levels=out.by.feature$labels[out.by.feature$order], ordered=TRUE)
+
+## Lookup table for labeling later
+orig.labels <- colnames(data)
+lab.lookup <- data.frame(orig.labels,feature.labels)
+lab.lookup$cluster.order <- out.by.feature$order
+
+## Price is not included as a label below (because we use it as a
+## facet), so we will permute the table now and then drop it and its
+## unused levels, and add a new numeric index.
+lab.lookup <- lab.lookup[lab.lookup$cluster.order,]
+lab.lookup <- lab.lookup[lab.lookup$orig.labels!="Price",]
+lab.lookup$orig.labels <- droplevels(lab.lookup$orig.labels)
+lab.lookup$feature.labels <- droplevels(lab.lookup$feature.labels)
+lab.lookup$figure.order <- c(1:nrow(lab.lookup))
+
+library(gdata)
+lab.lookup$orig.labels <- reorder.factor(lab.lookup$orig.labels,
+                                         new.order=lab.lookup$orig.labels[lab.lookup$figure.order])
+lab.lookup$feature.labels <- reorder.factor(lab.lookup$feature.labels,
+                                    new.order=lab.lookup$feature.labels[lab.lookup$figure.order])
+detach(package:gdata)
+
 ### Get the data ready for plotting
 data.m <- data.frame(r.names, data.o)
 colnames(data.m)[1] <- "Name"
@@ -159,30 +179,9 @@ dev.off()
 ### 2. Cluster on both
 ### --------------------------------------------------
 ### Get the data ready for plotting
-data.m <- data.frame(r.names, data.o)
-colnames(data.m)[1] <- "Name"
-data.melt <- melt(data.m, id.vars=c("Name","Price"))
-colnames(data.melt) <- c("Editor", "Price", "Feature", "Present")
-
 library(gdata)
-
-c.names.noprice <- c.names[-1]
-c.names.noprice <- noprice <- droplevels(c.names.noprice)
-
-data.melt$Present <- reorder.factor(data.melt$Present,
-                                     new.order=c("Yes", "No", "$$", "?"))
 data.melt$Feature <- reorder.factor(data.melt$Feature,
-                                    new.order=c.names)
-data.melt$Price <- reorder.factor(data.melt$Price, new.order=c("Free",
-                                                     "Free/$$",
-                                                     "Free/2.99",
-                                                     "$0.99", "$1.99",
-                                                     "$2.99",
-                                                     "$2/4.99",
-                                                     "$3.99", "$4.99",
-                                                     "$5.99",
-                                                     "$5/8.99",
-                                                     "$9.99", "$19.99"))
+                                    new.order=lab.lookup$orig.labels)
 detach(package:gdata)
 
 
@@ -190,21 +189,19 @@ detach(package:gdata)
 pdf(file="figures/spec-cluster-full.pdf", height=21, width=10, pointsize=12)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black"))
-p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete() +
+p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=lab.lookup$feature.labels) +
   opts(axis.text.x=theme_text(hjust=1, angle=90),
        axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
 credit()
-
 dev.off()
 
 png(file="figures/spec-cluster-full.png", height=1100, width=700, pointsize=10)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black"))
-p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=lab.lookup$feature.labels) +
   opts(axis.text.x=theme_text(hjust=1, angle=90),
        axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
 credit()
-
 dev.off()
 
 
@@ -212,44 +209,12 @@ dev.off()
 ### --------------------------------------------------
 ### 3. Break out by price
 ### --------------------------------------------------
-data.o <- data[o.row, o.col] ## sort based on clustering of both Editors and Features
-
-r.names <- factor(rownames(data.o), levels=rownames(data)[o.row], ordered=TRUE)
-c.names <- factor(colnames(data.o), levels=colnames(data)[o.col], ordered=TRUE)
-
-### Get the data ready for plotting
-data.m <- data.frame(r.names, data.o)
-colnames(data.m)[1] <- "Name"
-data.melt <- melt(data.m, id.vars=c("Name","Price"))
-colnames(data.melt) <- c("Editor", "Price", "Feature", "Present")
-
-
-library(gdata)
-data.melt$Present <- reorder.factor(data.melt$Present,
-                                     new.order=c("Yes", "No", "$$", "?"))
-data.melt$Feature <- reorder.factor(data.melt$Feature,
-                                    new.order=c.names)
-data.melt$Price <- reorder.factor(data.melt$Price, new.order=c("Free",
-                                                     "Free/$$",
-                                                     "Free/2.99",
-                                                     "$0.99", "$1.99",
-                                                     "$2.99",
-                                                     "$2/4.99",
-                                                     "$3.99", "$4.99",
-                                                     "$5.99",
-                                                     "$5/8.99",
-                                                     "$9.99", "$19.99"))
-detach(package:gdata)
-
-## Color palette
-my.cols <- brewer.pal(9, "Pastel1")
-my.cols <- my.cols[c(3,1,5,9)]
 
 pdf(file="figures/spec-cluster-by-price.pdf", height=21, width=10, pointsize=12)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black",
                            group=Price))
-p0 <- p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+p0 <- p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=lab.lookup$feature.labels) +
   opts(axis.text.x=theme_text(hjust=1, angle=90),
        axis.text.y=theme_text(hjust=1)) # + coord_flip()
 p0 + facet_grid(Price~., scales="free_y", space="free", as.table=TRUE,
@@ -263,7 +228,7 @@ png(file="figures/spec-cluster-by-price.png", height=1100, width=700, pointsize=
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black",
                            group=Price))
-p0 <- p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+p0 <- p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=lab.lookup$feature.labels) +
   opts(axis.text.x=theme_text(hjust=1, angle=90),
        axis.text.y=theme_text(hjust=1)) # + coord_flip()
 p0 + facet_grid(Price~., scales="free_y", space="free", as.table=TRUE,
