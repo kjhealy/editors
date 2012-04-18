@@ -2,32 +2,217 @@
 ### Messing about with Brett Terpstra's iOS text/code editors comparison
 ### Data from http://brettterpstra.com/ios-text-editors/
 
-data <- read.csv("data/editors-data.csv", header=TRUE)
-
-### Drop price for now
-data <- data[,-1]
-
 library(cluster)
 library(ggplot2)
 library(scales)
 library(reshape)
+library(RColorBrewer)
 
+makeFootnote <- function(footnoteText=
+                         format(Sys.time(), "%d %b %Y"),
+                         size= .7, color= grey(.5))
+{
+   require(grid)
+   pushViewport(viewport())
+   grid.text(label= footnoteText ,
+             x = unit(1,"npc") - unit(2, "mm"),
+             y= unit(2, "mm"),
+             just=c("right", "bottom"),
+             gp=gpar(cex= size, col=color))
+   popViewport()
+}
+
+credit <- function() {
+  return(makeFootnote("http://kieranhealy.org/blog/2012/04/18/visualizing-ios-text-editors/"))
+}
+
+### Data
+data <- read.csv("data/editors-data.csv", header=TRUE)
+
+### Drop price for now
+### data <- data[,-1]
+
+## Break out iPad-only and iPhone-only
+## data.phone <- data[data$iPhone=="Yes",]
+## data.pad <- data[data$iPad=="Yes",]
+
+## Dissimilarity matrices
 d <- daisy(data)
-d1 <- daisy(as.data.frame(t(data)))
+
+## Create a factor (to aid clustering) to mirror BT's own
+## feature groupings. (This doesn't mess up the row/col numbers
+## because it's a column and we're clustering on rows always)
+Feature.Type <- factor(x=c("Price", rep("Device", 2), rep("Sync", 5),
+                         rep("Export", 7), rep("Features", 15)))
+data1 <- as.data.frame(t(data))
+data1$Feature.Type <- Feature.Type
+d1 <- daisy(data1)
+
+
+## Clustering
 out.by.name <- hclust(d, method="ward")
 out.by.feature <- hclust(d1, method="ward")
-o.row <- out.by.name$order
-o.col <- out.by.feature$order
 
-data.o <- data[o.row, o.col] ## sort based on clustering of both Editors and Features
+pdf(file="figures/cluster-by-name.pdf", height=10,width=14, pointsize=11)
+plot(out.by.name, hang=-1, main="Clustering Editors by Common Features",
+     sub="", xlab="")
+credit()
+dev.off()
+
+png(file="figures/cluster-by-name.png", height=700,width=1000, pointsize=12)
+plot(out.by.name, hang=-1, main="Clustering Editors by Common Features",
+     sub="", xlab="")
+credit()
+dev.off()
+
+pdf(file="figures/cluster-by-feature.pdf", height=10,width=13, pointsize=11)
+plot(out.by.feature, hang=-1, main="Clustering Features",
+     sub="", xlab="")
+credit()
+dev.off()
+
+png(file="figures/cluster-by-feature.png", height=700,width=1000, pointsize=12)
+plot(out.by.feature, hang=-1, main="Clustering Features",
+     sub="", xlab="")
+credit()
+dev.off()
 
 ## Clean the labels for use below
-feature.labels <- gsub("\\."," ", colnames(data.o))
+feature.labels <- gsub("\\."," ", colnames(data))
 feature.labels <- gsub("preview export", "preview/export", feature.labels)
 feature.labels <- gsub("Open in ", "Open in…", feature.labels)
 feature.labels <- gsub("Full text", "Full-text", feature.labels)
 feature.labels <- gsub("handlers", "handler(s)", feature.labels)
+orig.labels <- colnames(data)
 
+## Lookup table for labeling later
+lab.lookup <- data.frame(orig.labels,feature.labels)
+
+## Price is not included as a label
+feature.labels <- feature.labels[2:length(feature.labels)]
+lab.lookup <- lab.lookup[-1,]
+
+## Put in the rownames as a variable
+data.o <- data
+r.names <- factor(rownames(data.o), levels=rev(rownames(data)), ordered=TRUE)
+c.names <- factor(colnames(data.o), levels=colnames(data), ordered=TRUE)
+### Get the data ready for plotting
+data.m <- data.frame(r.names, data.o)
+colnames(data.m)[1] <- "Name"
+data.melt <- melt(data.m, id.vars=c("Name","Price"))
+colnames(data.melt) <- c("Editor", "Price", "Feature", "Present")
+
+
+### --------------------------------------------------
+### Plot specific work starts here
+### --------------------------------------------------
+
+### --------------------------------------------------
+### 1. No sorting
+### --------------------------------------------------
+
+library(gdata)
+data.melt$Present <- reorder.factor(data.melt$Present,
+                                     new.order=c("Yes", "No", "$$", "?"))
+data.melt$Feature <- reorder.factor(data.melt$Feature,
+                                    new.order=c.names)
+data.melt$Price <- reorder.factor(data.melt$Price, new.order=c("Free",
+                                                     "Free/$$",
+                                                     "Free/2.99",
+                                                     "$0.99", "$1.99",
+                                                     "$2.99",
+                                                     "$2/4.99",
+                                                     "$3.99", "$4.99",
+                                                     "$5.99",
+                                                     "$5/8.99",
+                                                     "$9.99", "$19.99"))
+detach(package:gdata)
+
+## Color palette
+my.cols <- brewer.pal(9, "Pastel1")
+my.cols <- my.cols[c(3,1,5,9)]
+
+pdf(file="figures/spec-cluster-alphabetical.pdf", height=21, width=10, pointsize=12)
+p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
+                           color="black",
+                           group=Price))
+p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+  opts(axis.text.x=theme_text(hjust=1, angle=90),
+       axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
+credit()
+
+dev.off()
+
+png(file="figures/spec-cluster-alphabetical.png", height=1100, width=700, pointsize=10)
+p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
+                           color="black"))
+p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+  opts(axis.text.x=theme_text(hjust=1, angle=90),
+       axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
+credit()
+
+dev.off()
+
+
+
+### --------------------------------------------------
+### 2. Cluster on both
+### --------------------------------------------------
+### Get the data ready for plotting
+data.m <- data.frame(r.names, data.o)
+colnames(data.m)[1] <- "Name"
+data.melt <- melt(data.m, id.vars=c("Name","Price"))
+colnames(data.melt) <- c("Editor", "Price", "Feature", "Present")
+
+library(gdata)
+
+c.names.noprice <- c.names[-1]
+c.names.noprice <- noprice <- droplevels(c.names.noprice)
+
+data.melt$Present <- reorder.factor(data.melt$Present,
+                                     new.order=c("Yes", "No", "$$", "?"))
+data.melt$Feature <- reorder.factor(data.melt$Feature,
+                                    new.order=c.names)
+data.melt$Price <- reorder.factor(data.melt$Price, new.order=c("Free",
+                                                     "Free/$$",
+                                                     "Free/2.99",
+                                                     "$0.99", "$1.99",
+                                                     "$2.99",
+                                                     "$2/4.99",
+                                                     "$3.99", "$4.99",
+                                                     "$5.99",
+                                                     "$5/8.99",
+                                                     "$9.99", "$19.99"))
+detach(package:gdata)
+
+
+
+pdf(file="figures/spec-cluster-full.pdf", height=21, width=10, pointsize=12)
+p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
+                           color="black"))
+p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete() +
+  opts(axis.text.x=theme_text(hjust=1, angle=90),
+       axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
+credit()
+
+dev.off()
+
+png(file="figures/spec-cluster-full.png", height=1100, width=700, pointsize=10)
+p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
+                           color="black"))
+p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+  opts(axis.text.x=theme_text(hjust=1, angle=90),
+       axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
+credit()
+
+dev.off()
+
+
+
+### --------------------------------------------------
+### 3. Break out by price
+### --------------------------------------------------
+data.o <- data[o.row, o.col] ## sort based on clustering of both Editors and Features
 
 r.names <- factor(rownames(data.o), levels=rownames(data)[o.row], ordered=TRUE)
 c.names <- factor(colnames(data.o), levels=colnames(data)[o.col], ordered=TRUE)
@@ -35,23 +220,55 @@ c.names <- factor(colnames(data.o), levels=colnames(data)[o.col], ordered=TRUE)
 ### Get the data ready for plotting
 data.m <- data.frame(r.names, data.o)
 colnames(data.m)[1] <- "Name"
-data.melt <- melt(data.m, id.vars="Name")
-colnames(data.melt) <- c("Editor", "Feature", "Present")
+data.melt <- melt(data.m, id.vars=c("Name","Price"))
+colnames(data.melt) <- c("Editor", "Price", "Feature", "Present")
+
 
 library(gdata)
 data.melt$Present <- reorder.factor(data.melt$Present,
                                      new.order=c("Yes", "No", "$$", "?"))
-data.melt$Feature <- reorder.factor(data.melt$Feature, new.order=c.names)
+data.melt$Feature <- reorder.factor(data.melt$Feature,
+                                    new.order=c.names)
+data.melt$Price <- reorder.factor(data.melt$Price, new.order=c("Free",
+                                                     "Free/$$",
+                                                     "Free/2.99",
+                                                     "$0.99", "$1.99",
+                                                     "$2.99",
+                                                     "$2/4.99",
+                                                     "$3.99", "$4.99",
+                                                     "$5.99",
+                                                     "$5/8.99",
+                                                     "$9.99", "$19.99"))
 detach(package:gdata)
 
 ## Color palette
 my.cols <- brewer.pal(9, "Pastel1")
 my.cols <- my.cols[c(3,1,5,9)]
 
-pdf(file="figures/spec-cluster.pdf", height=9, width=16, pointsize=11)
-p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present))
-p + geom_tile() + scale_fill_manual(values=my.cols) +
-  scale_x_discrete(labels=feature.labels) +
+pdf(file="figures/spec-cluster-by-price.pdf", height=21, width=10, pointsize=12)
+p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
+                           color="black",
+                           group=Price))
+p0 <- p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
   opts(axis.text.x=theme_text(hjust=1, angle=90),
-       axis.text.y=theme_text(hjust=1)) + coord_flip()
+       axis.text.y=theme_text(hjust=1)) # + coord_flip()
+p0 + facet_grid(Price~., scales="free_y", space="free", as.table=TRUE,
+                shrink=TRUE) + scale_colour_discrete(guide="none") +
+  opts(legend.position = "top") +
+  opts(strip.text.y=theme_text(size=9))
+credit()
+dev.off()
+
+png(file="figures/spec-cluster-by-price.png", height=1100, width=700, pointsize=10)
+p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
+                           color="black",
+                           group=Price))
+p0 <- p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
+  opts(axis.text.x=theme_text(hjust=1, angle=90),
+       axis.text.y=theme_text(hjust=1)) # + coord_flip()
+p0 + facet_grid(Price~., scales="free_y", space="free", as.table=TRUE,
+                shrink=TRUE) + scale_colour_discrete(guide="none") +
+  opts(legend.position = "top") +
+  opts(strip.text.y=theme_text(size=9))
+credit()
 dev.off()
