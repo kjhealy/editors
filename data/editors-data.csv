@@ -2,7 +2,9 @@ Price,iPhone,iPad,Dropbox,iCloud,WebDAV,iTunes,Proprietary,Plain text,Copy HTML,
 1a Easy Writer,$1.99,No,Yes,Yes,Yes,No,Yes,No,Yes,No,Yes,No,No,Yes,Yes,No,No,No,No,No,Yes,No,No,No,No,No,No,No,No,Yes
 AppWriter,$19.99,No,Yes,Yes,No,No,No,No,Yes,No,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No
 Byword,$2.99,Yes,Yes,Yes,Yes,No,Yes,No,Yes,Yes,Yes,Yes,No,Yes,No,Yes,Yes,Yes,No,No,Yes,No,No,No,Yes,Yes,No,No,No,No
+Character Writer,$2.99,No,Yes,No,No,No,Yes,No,Yes,No,Yes,No,No,Yes,Yes,No,No,No,Yes,No,Yes,No,No,No,Yes,Yes,No,No,Yes,No
 Clean Writer,$0.99,No,Yes,Yes,No,No,Yes,No,Yes,No,Yes,No,No,No,Yes,No,No,No,Yes,No,Yes,No,No,No,Yes,Yes,No,No,No,No
+CompleteNote,$1.99,Yes,Yes,No,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No,Yes,No,Yes,Yes,No,No,No,No,No,No,No,No
 Compositions,$1.99,Yes,Yes,Yes,No,No,No,Yes,Yes,No,Yes,No,No,No,No,Yes,No,No,Yes,No,No,No,No,No,Yes,No,No,No,No,No
 Daedalus,$4.99,No,Yes,Yes,No,No,Yes,No,Yes,No,Yes,No,Yes,Yes,Yes,Yes,No,Yes,Yes,No,Yes,Yes,No,Yes,Yes,Yes,No,No,No,Yes
 Drafts,$0.99,Yes,No,No,No,No,No,No,Yes,Yes,Yes,Yes,No,No,Yes,Yes,Yes,No,Yes,No,No,No,No,Yes,Yes,Yes,No,No,Yes,No
@@ -11,6 +13,7 @@ Elements,$4.99,Yes,Yes,Yes,Yes,No,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes,
 FastEver,$1.99,Yes,No,No,No,No,No,Yes,No,No,No,No,No,No,No,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No,No
 FastEverXL,$3.99,No,Yes,No,No,No,No,Yes,No,No,No,No,No,No,No,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No,No
 Gusto,$9.99,No,Yes,No,No,No,Yes,No,No,No,Yes,Yes,No,No,Yes,No,No,No,No,Yes,Yes,No,No,Yes,No,No,No,No,No,Yes
+Gusto Mobile,$4.99,Yes,No,No,No,No,Yes,No,No,No,Yes,Yes,No,No,Yes,No,No,No,No,Yes,Yes,No,No,Yes,No,No,No,No,No,Yes
 iA Writer,$0.99,Yes,Yes,Yes,Yes,No,Yes,No,Yes,No,Yes,No,No,Yes,No,Yes,No,Yes,No,No,Yes,No,No,No,Yes,Yes,No,Yes,?,No
 iWriter,$2.99,No,Yes,Yes,No,No,Yes,No,Yes,No,Yes,No,No,Yes,Yes,No,No,No,Yes,No,Yes,No,No,No,Yes,Yes,No,Yes,No,No
 Knowtes,$2.99,No,Yes,Yes,No,No,No,No,Yes,No,No,No,No,No,Yes,No,Yes,No,Yes,No,Yes,No,No,No,Yes,Yes,No,No,No,Yes
@@ -21,7 +24,7 @@ MarkdownNote,$3.99,No,Yes,Yes,No,No,No,No,No,No,No,Yes,No,No,No,Yes,Yes,Yes,Yes,
 My Writing Spot,$2/4.99,Yes,Yes,No,No,No,No,Yes,Yes,Yes,Yes,Yes,No,Yes,No,Yes,No,No,No,No,Yes,No,No,No,Yes,Yes,No,No,No,No
 Nebulous Notes,$3.99,Yes,Yes,Yes,No,No,No,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,No,?,Yes,Yes,Yes,No,No,?,No
 Nocs,Free/$$,Yes,Yes,Yes,No,No,Yes,No,Yes,No,No,No,No,No,No,Yes,Yes,No,Yes,No,No,No,No,No,No,No,No,No,No,No
-Notebook,$4.99,Yes,Yes,Yes,No,No,No,No,Yes,No,Yes,No,No,No,No,Yes,No,No,Yes,Yes,Yes,No,No,Yes,No,No,No,No,Yes,No
+Notebook,$4.99,Yes,Yes,Yes,No,No,No,No,Yes,No,Yes,No,No,No,No,Yes,No,No,Yes,No,Yes,No,No,Yes,No,No,No,No,Yes,No
 Notebooks,$5/8.99,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes,?,Yes,Yes,Yes,No,No,?,?
 Notely,$3.99,Yes,Yes,Yes,No,No,No,No,No,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes,?,Yes,Yes,Yes,No,No,?,No
 Notesy,$4.99,Yes,Yes,Yes,No,No,No,No,Yes,Yes,Yes,Yes,No,Yes,No,Yes,Yes,Yes,Yes,No,No,No,No,Yes,Yes,Yes,No,No,?,No
@@ -38,7 +41,7 @@ Simplenote,Free/$$,Yes,Yes,$$,No,No,No,Yes,Yes,No,Yes,No,No,Yes,No,Yes,No,No,Yes
 Split Pea,$1.99,No,Yes,No,No,No,Yes,No,Yes,Yes,Yes,Yes,No,Yes,No,No,Yes,No,No,No,No,No,?,Yes,No,No,No,No,?,Yes
 Textastic,$9.99,No,Yes,Yes,No,Yes,Yes,No,Yes,Yes,Yes,Yes,No,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes,No,No,Yes,Yes
 TextCrafter,Free/2.99,Yes,No,No,No,No,No,No,Yes,No,Yes,No,No,No,No,No,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No
-Textforce,$2.99,Yes,Yes,Yes,No,No,?,No,Yes,No,No,No,No,No,Yes,No,No,No,No,No,Yes,Yes,Yes,No,No,Yes,No,No,No,No
+Textforce,$2.99,Yes,Yes,Yes,No,No,?,No,Yes,No,No,No,No,No,Yes,Yes,No,No,No,No,Yes,Yes,Yes,No,No,Yes,No,No,No,No
 Textkraft,$3.99,No,Yes,Yes,Yes,No,Yes,No,Yes,No,Yes,No,No,Yes,Yes,No,No,No,No,No,Yes,No,No,No,Yes,Yes,Yes,Yes,No,Yes
 Trunk Notes,$3.99,Yes,Yes,Yes,No,No,Yes,No,Yes,No,Yes,Yes,No,No,No,Yes,Yes,Yes,No,No,Yes,Yes,?,Yes,No,No,No,No,?,No
 Verses notebook,$1.99,Yes,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No
