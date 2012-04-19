@@ -23,7 +23,7 @@ makeFootnote <- function(footnoteText=
 }
 
 credit <- function() {
-  return(makeFootnote("http://kieranhealy.org/blog/2012/04/18/visualizing-ios-text-editors/"))
+  return(makeFootnote("\nhttp://kieranhealy.org/blog/2012/04/18/visualizing-ios-text-editors/"))
 }
 
 ### Data
@@ -163,7 +163,7 @@ credit()
 
 dev.off()
 
-png(file="figures/spec-cluster-alphabetical.png", height=1100, width=700, pointsize=10)
+png(file="figures/spec-cluster-alphabetical.png", height=1650, width=950, pointsize=18)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black"))
 p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=feature.labels) +
@@ -172,7 +172,6 @@ p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=fe
 credit()
 
 dev.off()
-
 
 
 ### --------------------------------------------------
@@ -195,7 +194,7 @@ p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=la
 credit()
 dev.off()
 
-png(file="figures/spec-cluster-full.png", height=1100, width=700, pointsize=10)
+png(file="figures/spec-cluster-full.png", height=1650, width=950, pointsize=18)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black"))
 p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=lab.lookup$feature.labels) +
@@ -224,7 +223,7 @@ p0 + facet_grid(Price~., scales="free_y", space="free", as.table=TRUE,
 credit()
 dev.off()
 
-png(file="figures/spec-cluster-by-price.png", height=1100, width=700, pointsize=10)
+png(file="figures/spec-cluster-by-price.png", height=1650, width=700, pointsize=18)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black",
                            group=Price))
