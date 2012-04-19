@@ -225,7 +225,7 @@ p0 + facet_grid(Price~., scales="free_y", space="free", as.table=TRUE,
 credit()
 dev.off()
 
-png(file="figures/spec-cluster-by-price.png", height=1650, width=700, pointsize=18)
+png(file="figures/spec-cluster-by-price.png", height=1650, width=950, pointsize=18)
 p <- ggplot(data.melt, aes(x=Feature, y=Editor, fill=Present,
                            color="black",
                            group=Price))
