@@ -8,6 +8,9 @@ library(scales)
 library(reshape)
 library(RColorBrewer)
 
+### --------------------------------------------------
+### Attribution footnote for graphs
+### --------------------------------------------------
 makeFootnote <- function(footnoteText=
                          format(Sys.time(), "%d %b %Y"),
                          size= .7, color= grey(.5))
@@ -26,33 +29,30 @@ credit <- function() {
   return(makeFootnote("\nhttp://kieranhealy.org/blog/2012/04/18/visualizing-ios-text-editors/"))
 }
 
+### --------------------------------------------------
 ### Data
+### --------------------------------------------------
 data <- read.csv("data/editors-data.csv", header=TRUE)
 
-### Drop price for now
-### data <- data[,-1]
-
-## Break out iPad-only and iPhone-only
-## data.phone <- data[data$iPhone=="Yes",]
-## data.pad <- data[data$iPad=="Yes",]
-
-## Dissimilarity matrices
+## Dissimilarity matrix
 d <- daisy(data)
 
-## Create a factor (to aid clustering) to mirror BT's own
-## feature groupings. (This doesn't mess up the row/col numbers
-## because it's a column and we're clustering on rows always)
+## Create a factor to aid clustering that mirror BT's own
+## feature groupings.
 Feature.Type <- factor(x=c("Price", rep("Device", 2), rep("Sync", 5),
                          rep("Export", 7), rep("Features", 15)))
 data1 <- as.data.frame(t(data))
 data1$Feature.Type <- Feature.Type
 d1 <- daisy(data1)
 
-
 ## Clustering
 out.by.name <- hclust(d, method="ward")
 out.by.feature <- hclust(d1, method="ward")
 
+
+### --------------------------------------------------
+### Plot the Dendrograms
+### --------------------------------------------------
 pdf(file="figures/cluster-by-name.pdf", height=10,width=14, pointsize=11)
 plot(out.by.name, hang=-1, main="Clustering Editors by Common Features",
      sub="", xlab="")
@@ -77,7 +77,11 @@ plot(out.by.feature, hang=-1, main="Clustering Features",
 credit()
 dev.off()
 
-## Clean the labels for use below
+###--------------------------------------------------
+### Prep the tables
+### --------------------------------------------------
+
+## Clean the labels
 feature.labels <- gsub("\\."," ", colnames(data))
 feature.labels <- gsub("preview export", "preview/export", feature.labels)
 feature.labels <- gsub("Open in ", "Open in…", feature.labels)
@@ -95,14 +99,14 @@ c.names <- factor(colnames(data.o), levels=colnames(data), ordered=TRUE)
 c.names.clus <- out.by.feature$labels[out.by.feature$order]
 c.names.clus.f <- factor(c.names.clus, levels=out.by.feature$labels[out.by.feature$order], ordered=TRUE)
 
-## Lookup table for labeling later
+## Lookup table for labeling later (not strictly needed but for reference)
 orig.labels <- colnames(data)
 lab.lookup <- data.frame(orig.labels,feature.labels)
 lab.lookup$cluster.order <- out.by.feature$order
 
 ## Price is not included as a label below (because we use it as a
-## facet), so we will permute the table now and then drop it and its
-## unused levels, and add a new numeric index.
+## facet), so we will permute the table now, then drop it and its
+## unused levels, then add a new numeric index.
 lab.lookup <- lab.lookup[lab.lookup$cluster.order,]
 lab.lookup <- lab.lookup[lab.lookup$orig.labels!="Price",]
 lab.lookup$orig.labels <- droplevels(lab.lookup$orig.labels)
@@ -124,11 +128,11 @@ colnames(data.melt) <- c("Editor", "Price", "Feature", "Present")
 
 
 ### --------------------------------------------------
-### Plot specific work starts here
+### Plot the table
 ### --------------------------------------------------
 
 ### --------------------------------------------------
-### 1. No sorting
+### 1. A version of the Original
 ### --------------------------------------------------
 
 library(gdata)
@@ -177,7 +181,7 @@ dev.off()
 ### --------------------------------------------------
 ### 2. Cluster on both
 ### --------------------------------------------------
-### Get the data ready for plotting
+
 library(gdata)
 data.melt$Feature <- reorder.factor(data.melt$Feature,
                                     new.order=lab.lookup$orig.labels)
@@ -202,8 +206,6 @@ p + geom_tile() + scale_fill_manual(values=my.cols) + scale_x_discrete(labels=la
        axis.text.y=theme_text(hjust=1)) + scale_colour_discrete(guide="none") + opts(legend.position = "top")
 credit()
 dev.off()
-
-
 
 ### --------------------------------------------------
 ### 3. Break out by price
