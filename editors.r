@@ -29,6 +29,16 @@ credit <- function() {
   return(makeFootnote("\nhttp://kieranhealy.org/blog/2012/04/18/visualizing-ios-text-editors/"))
 }
 
+## double center a matrix
+doubleCenter <- function(x){
+  n <- dim(x)[1]
+  k <- dim(x)[2]
+  rowMeans <- matrix(apply(x,1,mean,na.rm=TRUE),n,k,byrow=TRUE)
+  colMeans <- matrix(apply(x,2,mean,na.rm=TRUE),n,k,byrow=FALSE)
+  matrixMean <- matrix(mean(x,na.rm=TRUE),n,k)
+  (x - rowMeans - colMeans + matrixMean)/-2
+}
+
 ### --------------------------------------------------
 ### Data
 ### --------------------------------------------------
@@ -36,6 +46,15 @@ data <- read.csv("data/editors-data.csv", header=TRUE)
 
 ## Dissimilarity matrix
 d <- daisy(data)
+
+### Check applicability
+dc  <- doubleCenter(as.matrix(d))
+dc.eig <- eigen(dc)
+dc.eig.v <- dc.eig$values
+## we'd prefer most of the eigenvalues to be positive
+dc.eig.v>0
+e.pos <- sum(dc.eig.v[dc.eig.v>0])
+e.neg <- sum(dc.eig.v[dc.eig.v<0])
 
 ## Create a factor to aid clustering that mirror BT's own
 ## feature groupings.
